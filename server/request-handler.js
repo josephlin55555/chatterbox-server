@@ -14,7 +14,7 @@ this file and include it in basic-server.js so that it actually works.
 var data = {};
 var obj1 = {text: "hi", username: "joseph", objectId: "2"};
 var obj2 = {text: "hey", username: "eddie", objectId: "1"};
-data.results = [obj1, obj2];
+data.results = [];
 
 module.exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -54,22 +54,14 @@ module.exports.requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  // if (request.method === 'GET'){
-  //   console.log('get!');
-  //   var dummyResp = {};
-  //   dummyResp.results = ['hi joseph'];
-  //   response.end(dummyResp);//send messages instead
-  // } else if (request.method === 'POST'){
-  //   console.log('post!');
-  //   response.end('post sent');
-  // } else if (request.method === "OPTIONS"){
-  //   response.end('');
-  // }
+
+
   if (request.method === "OPTIONS"){
     statusCode = 200;
     response.writeHead(statusCode, headers);
     response.end('bye');
   } else if (request.method === "GET"){
+
     request.on('end', function(){
       statusCode = 404;
       response.writeHead(statusCode, headers);
@@ -78,19 +70,23 @@ module.exports.requestHandler = function(request, response) {
     statusCode = 200;
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify(data));
+
   } else if (request.method === "POST"){
+
     var info = '';
+
     request.on('data', function(chunk){
       info += chunk;
     });
+
     request.on('end', function(){
       var finalObj = JSON.parse(info);
-      var obj = {text: finalObj.text.toString(), username: finalObj.username.toString()};
+      var obj = {message: finalObj.message, username: finalObj.username};
       data.results.push(obj);
       console.log(obj);
       statusCode = 201;
       response.writeHead(statusCode, headers);
-      response.end('yay');
+      response.end(JSON.stringify(data));
     });
 
   }
