@@ -59,14 +59,13 @@ module.exports.requestHandler = function(request, response) {
   if (request.method === "OPTIONS"){
     statusCode = 200;
     response.writeHead(statusCode, headers);
-    response.end('bye');
+    response.end();
   } else if (request.method === "GET"){
-
-    request.on('end', function(){
+    if (request.url !== '/classes/messages'){
       statusCode = 404;
       response.writeHead(statusCode, headers);
       response.end();
-    });
+    }
     statusCode = 200;
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify(data));
